@@ -11,12 +11,12 @@ use Atua\FilamentFields\Currencies\BRL;
 class Money extends TextInput
 {
     protected string|int|float|null $initialValue = '0,00';
-
     protected ?Currency $currency = null;
-
     protected bool|Closure $dehydrateMask = false;
-
     protected bool|Closure $intFormat = false;
+
+    // Nova propriedade para as casas decimais
+    protected int $digits = 2;
 
     protected function setUp(): void
     {
@@ -44,6 +44,13 @@ class Money extends TextInput
         if ($currency !== 'BRL') {
             $this->prefix(null);
         }
+
+        return $this;
+    }
+
+    public function digits(int $digits = 2): static
+    {
+        $this->digits = $digits;
 
         return $this;
     }
@@ -111,10 +118,11 @@ class Money extends TextInput
     {
         $currency = new ($this->getCurrency());
         $numberFormatter = $currency->locale;
+        $digits = $this->digits; // Usa a propriedade dinâmica para definir as casas decimais
 
         return [
             'x-on:keyup' => 'function() {
-                $el.value = Currency.masking($el.value, {locales:\''.$numberFormatter.'\'});
+                $el.value = Currency.masking($el.value, {locales:\'' . $numberFormatter . '\', digits: ' . $digits . ', empty: true, viaInput: true});
             }',
         ];
     }
