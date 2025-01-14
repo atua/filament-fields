@@ -1,6 +1,6 @@
 <?php
 
-namespace Leandrocfe\FilamentPtbrFormFields\Database\Factories;
+namespace Atua\FilamentFields\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

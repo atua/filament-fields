@@ -1,17 +1,22 @@
 {
-    "name": "leandrocfe/filament-ptbr-form-fields",
+    "name": "atua/filament-fields",
     "description": "Brazilian pt-BR form fields.",
     "keywords": [
-        "leandrocfe",
+        "atua",
         "laravel",
-        "filament-ptbr-form-fields"
+        "filament-fields"
     ],
-    "homepage": "https://github.com/leandrocfe/filament-ptbr-form-fields",
+    "homepage": "https://github.com/atua/filament-fields",
     "license": "MIT",
     "authors": [
         {
-            "name": "Leandro Costa Ferreira",
-            "email": "leandrocfe@gmail.com",
+            "name": "Vinicius Spode",
+            "email": "vinicius@atua.com.br",
+            "role": "Developer"
+        },
+        {
+            "name": "Andrius Martini",
+            "email": "andrius.martini@atua.com.br",
             "role": "Developer"
         }
     ],
@@ -38,13 +43,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Leandrocfe\\FilamentPtbrFormFields\\": "src/",
-            "Leandrocfe\\FilamentPtbrFormFields\\Database\\Factories\\": "database/factories/"
+            "Atua\\FilamentFields\\": "src/",
+            "Atua\\FilamentFields\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Leandrocfe\\FilamentPtbrFormFields\\Tests\\": "tests/"
+            "Atua\\FilamentFields\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -64,10 +69,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Leandrocfe\\FilamentPtbrFormFields\\FilamentPtbrFormFieldsServiceProvider"
+                "Atua\\FilamentFields\\FilamentFieldsServiceProvider"
             ],
             "aliases": {
-                "FilamentPtbrFormFields": "Leandrocfe\\FilamentPtbrFormFields\\Facades\\FilamentPtbrFormFields"
+                "FilamentFields": "Atua\\FilamentFields\\Facades\\FilamentFields"
             }
         }
     },

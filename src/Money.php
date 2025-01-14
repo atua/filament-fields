@@ -1,12 +1,12 @@
 <?php
 
-namespace Leandrocfe\FilamentPtbrFormFields;
+namespace Atua\FilamentFields;
 
 use ArchTech\Money\Currency;
 use Closure;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Str;
-use Leandrocfe\FilamentPtbrFormFields\Currencies\BRL;
+use Atua\FilamentFields\Currencies\BRL;
 
 class Money extends TextInput
 {

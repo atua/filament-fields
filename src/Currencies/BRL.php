@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Leandrocfe\FilamentPtbrFormFields\Currencies;
+namespace Atua\FilamentFields\Currencies;
 
 use ArchTech\Money\Currency;
 

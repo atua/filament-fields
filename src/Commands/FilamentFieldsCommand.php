@@ -1,12 +1,12 @@
 <?php
 
-namespace Leandrocfe\FilamentPtbrFormFields\Commands;
+namespace Atua\FilamentFields\Commands;
 
 use Illuminate\Console\Command;
 
-class FilamentPtbrFormFieldsCommand extends Command
+class FilamentFieldsCommand extends Command
 {
-    public $signature = 'filament-ptbr-form-fields';
+    public $signature = 'filament-fields';
 
     public $description = 'My command';
 

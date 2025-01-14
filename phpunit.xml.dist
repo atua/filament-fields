@@ -16,7 +16,7 @@
     backupStaticProperties="false"
 >
     <testsuites>
-        <testsuite name="Leandrocfe Test Suite">
+        <testsuite name="Atua Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>

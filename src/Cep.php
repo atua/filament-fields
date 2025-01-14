@@ -1,6 +1,6 @@
 <?php
 
-namespace Leandrocfe\FilamentPtbrFormFields;
+namespace Atua\FilamentFields;
 
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Component;
@@ -19,7 +19,7 @@ class Cep extends TextInput
 
             $livewire->validateOnly($component->getKey());
 
-            $request = Http::get(config('filament-ptbr-form-fields.viacep_url').$state.'/json/')->json();
+            $request = Http::get(config('filament-fields.viacep_url').$state.'/json/')->json();
 
             foreach ($setFields as $key => $value) {
                 $set($key, $request[$value] ?? null);

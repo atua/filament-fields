@@ -1,9 +1,9 @@
 <?php
 
-namespace Leandrocfe\FilamentPtbrFormFields\Tests;
+namespace Atua\FilamentFields\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Leandrocfe\FilamentPtbrFormFields\FilamentPtbrFormFieldsServiceProvider;
+use Atua\FilamentFields\FilamentServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -13,14 +13,14 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Leandrocfe\\FilamentPtbrFormFields\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Atua\\FilamentFields\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            FilamentPtbrFormFieldsServiceProvider::class,
+            FilamentServiceProvider::class,
         ];
     }
 
@@ -29,7 +29,7 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
 
         /*
-        $migration = include __DIR__.'/../database/migrations/create_filament-ptbr-form-fields_table.php.stub';
+        $migration = include __DIR__.'/../database/migrations/create_filament-fields_table.php.stub';
         $migration->up();
         */
     }
