@@ -10,135 +10,84 @@ use Atua\FilamentFields\Currencies\BRL;
 
 class Money extends TextInput
 {
-    protected string|int|float|null $initialValue = '0,00';
-    protected ?Currency $currency = null;
-    protected bool|Closure $dehydrateMask = false;
-    protected bool|Closure $intFormat = false;
+  protected ?Currency $currency = null;
+  protected int $precision = 2;
 
-    // Nova propriedade para as casas decimais
-    protected int $digits = 2;
+  protected function setUp(): void
+  {
+    $this
+      ->currency()
+      ->maxLength(17)
+      ->extraAlpineAttributes(fn() => $this->getOnInputOrPaste())
+      ->formatStateUsing(fn($state) => $this->hydrateCurrency($state))
+      ->dehydrateStateUsing(fn($state) => $this->dehydrateCurrency($state));
+  }
 
-    protected function setUp(): void
+  public function currency(string|null|Closure $currency = BRL::class): static
+  {
+    $this->currency = new ($currency);
+    currencies()->add($currency);
+
+    if ($currency !== 'BRL')
     {
-        $this
-            ->currency()
-            ->prefix('R$')
-            ->extraAlpineAttributes(fn () => $this->getOnKeyPress())
-            ->extraAlpineAttributes(fn () => $this->getOnKeyUp())
-            ->formatStateUsing(fn ($state) => $this->hydrateCurrency($state))
-            ->dehydrateStateUsing(fn ($state) => $this->dehydrateCurrency($state));
+      $this->prefix(null);
     }
 
-    public function initialValue(null|string|int|float|Closure $value = '0,00'): static
-    {
-        $this->initialValue = $value;
+    return $this;
+  }
 
-        return $this;
+  public function precision(int $precision = 2): static
+  {
+    $this->precision = $precision;
+
+    return $this;
+  }
+
+  protected function hydrateCurrency($state): string
+  {
+    return $this->formatNumber($state, $this->precision);
+  }
+
+  public static function formatNumber($value, $precision = 2, $toFormat = 'pt_BR'): string
+  {
+    if ($toFormat === 'pt_BR')
+      return number_format($value, $precision, ',', '.');
+
+    if ($toFormat === 'sys')
+    {
+      $value = str_replace('.', '', $value);
+      $value = str_replace(',', '.', $value);
+
+      return $value;
     }
 
-    public function currency(string|null|Closure $currency = BRL::class): static
-    {
-        $this->currency = new ($currency);
-        currencies()->add($currency);
+    return $value; // Retorna o valor original se o formato não for reconhecido
+  }
 
-        if ($currency !== 'BRL') {
-            $this->prefix(null);
-        }
+  protected function dehydrateCurrency($state): int|float|string|null
+  {
+    if (empty($state))
+      return null;
 
-        return $this;
-    }
+    return $this->formatNumber($state, $this->precision, 'sys');
+  }
 
-    public function digits(int $digits = 2): static
-    {
-        $this->digits = $digits;
+  protected function getOnInputOrPaste(): array
+  {
+    $currency        = new ($this->getCurrency());
+    $numberFormatter = $currency->locale;
+    $precision       = $this->precision; // Usa a propriedade dinâmica para definir as casas decimais
 
-        return $this;
-    }
+    return [
+      'x-on:input' => 'function() {
+            $el.value = Currency.masking($el.value, {locales:\'' . $numberFormatter . '\', digits: ' . $precision . ', empty: true, viaInput: true});
+            $wire.set($el.getAttribute(\'wire:model\'), $el.value);
+           }',
+    ];
+  }
 
-    protected function hydrateCurrency($state): string
-    {
-        $sanitized = $this->sanitizeState($state);
-
-        $money = money(amount: $sanitized, currency: $this->getCurrency());
-
-        return $money->formatted(prefix: '');
-    }
-
-    protected function dehydrateCurrency($state): int|float|string
-    {
-        $sanitized = $this->sanitizeState($state);
-        $money = money(amount: $sanitized, currency: $this->getCurrency());
-
-        if ($this->getDehydrateMask()) {
-            return $money->formatted();
-        }
-
-        return $this->getIntFormat() ? $money->value() : $money->decimal();
-    }
-
-    public function dehydrateMask(bool $condition = true): static
-    {
-        $this->dehydrateMask = $condition;
-
-        return $this;
-    }
-
-    public function intFormat(bool|Closure $intFormat = true): static
-    {
-        $this->intFormat = $intFormat;
-
-        return $this;
-    }
-
-    protected function sanitizeState(?string $state): ?int
-    {
-        $state = Str::of($state)
-            ->replace('.', '')
-            ->replace(',', '')
-            ->toInteger();
-
-        return $state ?? null;
-    }
-
-    protected function getOnKeyPress(): array
-    {
-        return [
-            'x-on:keypress' => 'function() {
-                var charCode = event.keyCode || event.which;
-                if (charCode < 48 || charCode > 57) {
-                    event.preventDefault();
-                    return false;
-                }
-                return true;
-            }',
-        ];
-    }
-
-    protected function getOnKeyUp(): array
-    {
-        $currency = new ($this->getCurrency());
-        $numberFormatter = $currency->locale;
-        $digits = $this->digits; // Usa a propriedade dinâmica para definir as casas decimais
-
-        return [
-            'x-on:keyup' => 'function() {
-                $el.value = Currency.masking($el.value, {locales:\'' . $numberFormatter . '\', digits: ' . $digits . ', empty: true, viaInput: true});
-            }',
-        ];
-    }
-
-    public function getCurrency(): ?Currency
-    {
-        return $this->currency;
-    }
-
-    public function getDehydrateMask(): bool
-    {
-        return $this->dehydrateMask;
-    }
-
-    public function getIntFormat(): bool
-    {
-        return $this->intFormat;
-    }
+  public function getCurrency(): ?Currency
+  {
+    return $this->currency;
+  }
 }

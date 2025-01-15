@@ -124,7 +124,7 @@ class Currency {
             i,
         } = Currency.#getParts(v, digits)
 
-        if (empty && i === '0' && ['00', '000'].includes(d) && minus === '') {
+        if (empty && String(v).trim() === '') {
             return ''
         }
 
