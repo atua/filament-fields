@@ -2,38 +2,20 @@
 
 namespace Atua\FilamentFields;
 
-use ArchTech\Money\Currency;
-use Closure;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Str;
-use Atua\FilamentFields\Currencies\BRL;
 
-class Money extends TextInput
+class Number extends TextInput
 {
-  protected ?Currency $currency = null;
   protected int $precision = 2;
 
   protected function setUp(): void
   {
     $this
-      ->currency()
       ->maxLength(17)
+      ->extraInputAttributes(['class' => 'text-right'])
       ->extraAlpineAttributes(fn() => $this->getOnInputOrPaste())
-      ->formatStateUsing(fn($state) => $this->hydrateCurrency($state))
-      ->dehydrateStateUsing(fn($state) => $this->dehydrateCurrency($state));
-  }
-
-  public function currency(string|null|Closure $currency = BRL::class): static
-  {
-    $this->currency = new ($currency);
-    currencies()->add($currency);
-
-    if ($currency !== 'BRL')
-    {
-      $this->prefix(null);
-    }
-
-    return $this;
+      ->formatStateUsing(fn($state) => $this->hydrateFormat($state))
+      ->dehydrateStateUsing(fn($state) => $this->dehydrateFormat($state));
   }
 
   public function precision(int $precision = 2): static
@@ -43,7 +25,7 @@ class Money extends TextInput
     return $this;
   }
 
-  protected function hydrateCurrency($state): string
+  protected function hydrateFormat($state): string
   {
     return $this->formatNumber($state, $this->precision);
   }
@@ -61,10 +43,10 @@ class Money extends TextInput
       return $value;
     }
 
-    return $value; // Retorna o valor original se o formato não for reconhecido
+    return $value;
   }
 
-  protected function dehydrateCurrency($state): int|float|string|null
+  protected function dehydrateFormat($state): int|float|string|null
   {
     if (empty($state))
       return null;
@@ -74,9 +56,8 @@ class Money extends TextInput
 
   protected function getOnInputOrPaste(): array
   {
-    $currency        = new ($this->getCurrency());
-    $numberFormatter = $currency->locale;
-    $precision       = $this->precision; // Usa a propriedade dinâmica para definir as casas decimais
+    $numberFormatter = 'pt-BR';
+    $precision       = $this->precision;
 
     return [
       'x-on:input' => 'function() {
@@ -84,10 +65,5 @@ class Money extends TextInput
             $wire.set($el.getAttribute(\'wire:model\'), $el.value);
            }',
     ];
-  }
-
-  public function getCurrency(): ?Currency
-  {
-    return $this->currency;
   }
 }
