@@ -2,6 +2,7 @@
 
 namespace Atua\FilamentFields;
 
+use Closure;
 use Filament\Forms\Components\TextInput;
 
 class Number extends TextInput
@@ -53,6 +54,27 @@ class Number extends TextInput
 
     return $this->formatNumber($state, $this->precision, 'sys');
   }
+
+  public function gt(string|Closure $statePath, bool $isStatePathAbsolute = false): static
+  {
+     return $this->fieldComparisonRule('gtNumber', $statePath, $isStatePathAbsolute);
+  }
+
+  public function gte(string|Closure $statePath, bool $isStatePathAbsolute = false): static
+  {
+    return $this->fieldComparisonRule('gteNumber', $statePath, $isStatePathAbsolute);
+  }
+
+  public function lt(string|Closure $statePath, bool $isStatePathAbsolute = false): static
+  {
+    return $this->fieldComparisonRule('ltNumber', $statePath, $isStatePathAbsolute);
+  }
+
+  public function lte(string|Closure $statePath, bool $isStatePathAbsolute = false): static
+  {
+    return $this->fieldComparisonRule('lteNumber', $statePath, $isStatePathAbsolute);
+  }
+
 
   protected function getOnInputOrPaste(): array
   {
