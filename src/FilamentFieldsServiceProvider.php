@@ -90,8 +90,9 @@ class FilamentFieldsServiceProvider extends FilamentServiceProvider
 
 
     FilamentAsset::register([
-                              Js::make('money-script', __DIR__ . '/../resources/js/money.js'),
-                            ]);
+      Js::make('money-script', __DIR__ . '/../resources/js/money.js'),
+      Js::make('moment-script', __DIR__.'/../resources/js/moment.min.js'),
+    ]);
   }
 
   public function configurePackage(Package $package): void

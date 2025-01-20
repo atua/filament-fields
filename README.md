@@ -1,29 +1,52 @@
-# Brazilian pt-BR form fields.
+# Atua Filament Fields
 
-This package provides custom form fields for [Filament](https://filamentphp.com/) that are commonly used in Brazilian web applications, such as CPF/CNPJ validation, phone number formatting, money with currency symbol, and CEP integration with [ViaCep](https://viacep.com.br).
-
-This package uses [LaravelLegends/pt-br-validator](https://github.com/LaravelLegends/pt-br-validator) to validate Brazilian Portuguese fields.
-
-![image demo](https://raw.githubusercontent.com/leandrocfe/filament-ptbr-form-fields/develop/screenshots/v3x-example.png)
+This package is a fork of the [filament-ptbr-form-fields](https://github.com/leandrocfe/filament-ptbr-form-fields) project by [Leandrocfe](https://github.com/leandrocfe), where we made adjustments and created new field formats as well.
 
 ## Installation
 
 You can install the package via Composer:
 
 ```bash
-composer require leandrocfe/filament-ptbr-form-fields:"^3.0"
+composer require atua/filament-fields:dev-master
 ```
 
-### Filament V2 - if you are using Filament v2.x, you can use [this section](https://github.com/leandrocfe/filament-ptbr-form-fields/tree/2.0.0)
-
 ## Usage
+
+### DateTimePicker
+```php
+use Atua\FilamentFields\DateTimePicker;
+
+DateTimePicker::make('dt_inicio')
+```
+
+We can use this field to create a date or date + time field, to do this just use the format function:
+
+```php
+use Atua\FilamentFields\DateTimePicker;
+use Atua\FilamentFields\Enums\DateTimeFormat;
+
+DateTimePicker::make('dt_inicio')
+    ->format(DateTimeFormat::DDMMYY)
+
+# the allowed formats are specified in the Atua\FilamentFields\Enums\DateTimeForma enum
+```
+
+You can also add the option to select the current date/time using the useActualDateTime function:
+
+```php
+use Atua\FilamentFields\DateTimePicker;
+use Atua\FilamentFields\Enums\DateTimeFormat;
+
+DateTimePicker::make('dt_inicio')
+    ->useActualDateTime()
+```
 
 ### CPF / CNPJ
 
 To create a dynamic input that accepts either CPF or CNPJ, use:
 
 ```php
-use Leandrocfe\FilamentPtbrFormFields\Document;
+use Atua\FilamentFields\Document;
 //CPF or CNPJ
 Document::make('cpf_or_cnpj')
     ->dynamic()
@@ -77,7 +100,7 @@ Document::make('cpf')
 To create a dynamic input that formats phone numbers with DDD, use:
 
 ```php
-use Leandrocfe\FilamentPtbrFormFields\PhoneNumber;
+use Atua\FilamentFields\PhoneNumber;
 PhoneNumber::make('phone_number')
 ```
 
@@ -98,7 +121,7 @@ PhoneNumber::make('phone_number')
 To create a money input field, use the following syntax:
 
 ```php
-use Leandrocfe\FilamentPtbrFormFields\Money;
+use Atua\FilamentFields\Money;
 Money::make('price')
     ->default('100,00')
 
@@ -112,7 +135,7 @@ This is suitable for use with `decimal` or `float` data types.
 If you prefer to work with integer values, you can format the money input using the `intFormat()` method:
 
 ```php
-use Leandrocfe\FilamentPtbrFormFields\Money;
+use Atua\FilamentFields\Money;
 Money::make('price')
     ->default(10000)
     ->intFormat()
@@ -124,7 +147,7 @@ Money::make('price')
 To retrieve the raw state of the field, you can use the `dehydratedMask() method:
 
 ```php
-use Leandrocfe\FilamentPtbrFormFields\Money;
+use Atua\FilamentFields\Money;
 Money::make('price')
     ->default('100,00')
     ->dehydrateMask()
@@ -143,7 +166,7 @@ This package leverages the `archtechx/money` package under the hood. By default,
 
 If you want to switch to the `USD` (United States Dollar) format, you can do so with the following code:
 ```php
-use Leandrocfe\FilamentPtbrFormFields\Currencies\USD;
+use Atua\FilamentFields\Currencies\USD;
 
 Money::make('price')
     ->currency(USD::class)
@@ -233,7 +256,7 @@ Money::make('price')
 To integrate with the ViaCep API for CEP validation and address autofill, use:
 
 ```php
-use Leandrocfe\FilamentPtbrFormFields\Cep;
+use Atua\FilamentFields\Cep;
 use Filament\Forms\Components\TextInput;
 Cep::make('postal_code')
     ->viaCep(
@@ -265,29 +288,3 @@ TextInput::make('state'),
 
 The mode parameter specifies whether the search action should be appended to or prepended to the CEP field, using the values suffix or prefix. Alternatively, you can use the none value with the `->live(onBlur: true)` method to indicate that the other address fields will be automatically filled only when the CEP field loses focus.
 
-## Testing
-
-```bash
-composer test
-```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within this package, please send an e-mail to <leandrocfe@gmail.com>.
-
-## Credits
-
--   [Leandro Costa Ferreira](https://github.com/leandrocfe)
--   [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
