@@ -69,10 +69,10 @@ class DateTimePicker extends TextInput
    * @param ?string $state
    * @return string
    */
-  protected function hydrateDate(?string $state = null): string
+  protected function hydrateDate(?string $state = null): ?string
   {
     if (blank($state))
-      return "";
+      return null;
 
     try
     {
@@ -81,7 +81,7 @@ class DateTimePicker extends TextInput
     }
     catch (Exception)
     {
-      return "";
+      return null;
     }
   }
 
@@ -89,10 +89,10 @@ class DateTimePicker extends TextInput
    * @param ?string $state
    * @return string
    */
-  protected function dehydrateDate(?string $state = null): string
+  protected function dehydrateDate(?string $state = null): ?string
   {
     if (blank($state))
-      return "";
+      return null;
 
     try
     {
@@ -101,7 +101,7 @@ class DateTimePicker extends TextInput
     }
     catch (Exception)
     {
-      return "";
+      return null;
     }
   }
 
