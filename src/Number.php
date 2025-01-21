@@ -83,9 +83,20 @@ class Number extends TextInput
 
     return [
       'x-on:input' => 'function() {
-            $el.value = Currency.masking($el.value, {locales:\'' . $numberFormatter . '\', digits: ' . $precision . ', empty: true, viaInput: true});
-            $wire.set($el.getAttribute(\'wire:model\'), $el.value);
-           }',
+        let modelAttribute = null;
+
+        if ($el.getAttribute("wire:model"))
+          modelAttribute = "wire:model";
+
+        if ($el.getAttribute("wire:model.live"))
+          modelAttribute = "wire:model.live";
+
+        if (modelAttribute === null)
+          return;
+
+        $el.value = Currency.masking($el.value, {locales:\'' . $numberFormatter . '\', digits: ' . $precision . ', empty: true, viaInput: true});
+        $wire.set($el.getAttribute(modelAttribute), $el.value);
+      }',
     ];
   }
 }

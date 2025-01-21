@@ -55,6 +55,7 @@ class DateTimePicker extends TextInput
 
       $this->suffixAction(
         Action::make("setDefaultDate")
+          ->label("Selecionar Data/Hora Atual")
           ->icon("heroicon-o-clock")
           ->action(function (Set $set) use ($DateTime) {
             $set($this->getName(), $DateTime->format($this->getDateTimeMaskPHP()));
@@ -151,9 +152,20 @@ class DateTimePicker extends TextInput
 
     return [
       'x-on:blur' => 'function() {
+        let modelAttribute = null;
+
         if ($el.getAttribute("wire:model"))
+          modelAttribute = "wire:model";
+
+        if ($el.getAttribute("wire:model.live"))
+          modelAttribute = "wire:model.live";
+
+        if (modelAttribute === null)
+          return;
+
+        if ($el.getAttribute(modelAttribute))
         {
-          const pError = $el.closest("#" + $el.getAttribute("wire:model").replaceAll(".", "-") + "-data-invalida");
+          const pError = $el.closest("#" + $el.getAttribute(modelAttribute).replaceAll(".", "-") + "-data-invalida");
 
           if (pError)
             pError.remove();
@@ -183,7 +195,7 @@ class DateTimePicker extends TextInput
           if (formattedDate.isValid())
           {
             $el.value = formattedDate.format("' . $maskJS . '");
-            $wire.set($el.getAttribute("wire:model"), $el.value);
+            $wire.set($el.getAttribute(modelAttribute), $el.value);
           }
         }
 
@@ -194,7 +206,7 @@ class DateTimePicker extends TextInput
         {
           const errorElement = document.createElement("p");
           errorElement.classList.add("text-danger", "text-sm");
-          errorElement.setAttribute("id", $el.getAttribute("wire:model").replaceAll(".", "-") + "-data-invalida");
+          errorElement.setAttribute("id", $el.getAttribute(modelAttribute).replaceAll(".", "-") + "-data-invalida");
           errorElement.style.color = "red";
           errorElement.textContent = "Data inválida!";
 
@@ -202,7 +214,7 @@ class DateTimePicker extends TextInput
             $el.parentNode.parentNode.parentNode.appendChild(errorElement);
 
           $el.value = "";
-          $wire.set($el.getAttribute("wire:model"), $el.value);
+          $wire.set($el.getAttribute(modelAttribute), $el.value);
         }
       }',
     ];
