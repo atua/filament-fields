@@ -96,6 +96,7 @@ class DateTimePicker extends TextInput
                 defaultMinute: "' . date("i") . '",
                 time_24hr: true,
                 locale: "pt",
+                disableMobile: "true",
                 minuteIncrement: 1,
                 clickOpens: false,
                 appendTo: append,
