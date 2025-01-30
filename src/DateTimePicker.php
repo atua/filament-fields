@@ -20,26 +20,12 @@ class DateTimePicker extends TextInput
   protected function setUp(): void
   {
     $this
-      ->extraAlpineAttributes(fn () => $this->getOnBlur())
+      ->extraAlpineAttributes(fn () => $this->getAlpineAttributes())
       ->formatStateUsing(fn (?string $state) => $this->hydrateDate($state))
       ->mask($this->format->value)
       ->dehydrateStateUsing(fn (?string $state) => $this->dehydrateDate($state))
+      ->initDatePickerAction()
       ->rule(["date" => "date_format:{$this->getDateTimeMaskPHP()}"]);
-  }
-
-  /**
-   * @param DateTimeFormat $format
-   * @return $this
-   */
-  public function format(DateTimeFormat $format): static
-  {
-    $this->format = $format;
-
-    $this
-      ->mask($format->value)
-      ->rule(["date" => "date_format:{$this->getDateTimeMaskPHP()}"]);
-
-    return $this;
   }
 
   /**
@@ -67,8 +53,110 @@ class DateTimePicker extends TextInput
   }
 
   /**
-   * @param ?string $state
-   * @return string
+   * @param DateTimeFormat $format
+   * @return $this
+   */
+  public function format(DateTimeFormat $format): static
+  {
+    $this->format = $format;
+
+    $this
+      ->mask($format->value)
+      ->rule(["date" => "date_format:{$this->getDateTimeMaskPHP()}"]);
+
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
+  protected function initDatePickerAction(): static
+  {
+    $this->suffixAction(
+      Action::make("openDatePicker")
+        ->label("Abrir calendário")
+        ->icon("heroicon-o-calendar")
+        ->action(function ($livewire) {
+          $livewire->js('
+            setTimeout(() => {
+              let inputId = "' . $this->getId() . '";
+              let escapedId = CSS.escape(inputId);
+              let input = document.querySelector("#" + escapedId);
+              let append = input.closest(`[x-ref="modalContainer"]`);
+
+              if (append === null)
+                append = document.body;
+
+              let fp = flatpickr(input, {
+                enableTime: ' . ($this->showTimeInDatePicker() ? "true" : "false") . ',
+                enableSeconds: ' . ($this->showSecondsInDatePicker() ? "true" : "false") . ',
+                dateFormat: "' . $this->getDateTimeMaskDatePicker() .  '" ,
+                allowInput: true,
+                defaultHour: "' . date("H") . '",
+                defaultMinute: "' . date("i") . '",
+                time_24hr: true,
+                locale: "pt",
+                minuteIncrement: 1,
+                clickOpens: false,
+                appendTo: append,
+                closeOnSelect: true,
+                onClose: function () {
+                  let modelAttribute = null;
+
+                  if (input.getAttribute("wire:model"))
+                    modelAttribute = "wire:model";
+
+                  if (input.getAttribute("wire:model.live"))
+                    modelAttribute = "wire:model.live";
+
+                  if (modelAttribute === null)
+                    return;
+
+                  $wire.set(input.getAttribute(modelAttribute), input.value);
+
+                  if (fp)
+                    fp.destroy();
+                },
+                onOpen: function () {
+                  const calendar = this.calendarContainer;
+
+                  function getAbsolutePosition(element) {
+                    let top = 0, left = 0;
+
+                    while (element) {
+                      top += element.offsetTop - element.scrollTop + element.clientTop;
+                      left += element.offsetLeft - element.scrollLeft + element.clientLeft;
+                      element = element.offsetParent;
+                    }
+
+                    return { top, left };
+                  }
+
+                  setTimeout(() => {
+                    const position = getAbsolutePosition(input);
+                    const height = input.offsetHeight;
+
+                    if (calendar) {
+                      calendar.style.position = `absolute`;
+                      calendar.style.top = `${position.top + height}px`;
+                      calendar.style.left = `${position.left}px`;
+                    }
+                  }, 10);
+                }
+              });
+
+              fp.open();
+            }, 15);
+          ');
+        })
+    );
+
+    return $this;
+  }
+
+  /**
+   * @param string|null $state
+   * @return string|null
    */
   protected function hydrateDate(?string $state = null): ?string
   {
@@ -87,8 +175,8 @@ class DateTimePicker extends TextInput
   }
 
   /**
-   * @param ?string $state
-   * @return string
+   * @param string|null $state
+   * @return string|null
    */
   protected function dehydrateDate(?string $state = null): ?string
   {
@@ -119,6 +207,19 @@ class DateTimePicker extends TextInput
   }
 
   /**
+   * @return bool
+   */
+  protected function showTimeInDatePicker(): bool
+  {
+    return in_array($this->format, [DateTimeFormat::DDMMYYYYHHMMSS, DateTimeFormat::DDMMYYYYHHMM]);
+  }
+
+  protected function showSecondsInDatePicker(): bool
+  {
+    return $this->format === DateTimeFormat::DDMMYYYYHHMMSS;
+  }
+
+  /**
    * @return string
    */
   protected function getDateTimeMaskPHP(): string
@@ -129,6 +230,20 @@ class DateTimePicker extends TextInput
       DateTimeFormat::DDMMYYYY => "d/m/Y",
       DateTimeFormat::DDMMYYYYHHMM => "d/m/Y H:i",
       DateTimeFormat::DDMMYYYYHHMMSS => "d/m/Y H:i:s",
+    };
+  }
+
+  /**
+   * @return string
+   */
+  protected function getDateTimeMaskDatePicker(): string
+  {
+    return match ($this->format)
+    {
+      DateTimeFormat::DDMMYY => "d/m/y",
+      DateTimeFormat::DDMMYYYY => "d/m/Y",
+      DateTimeFormat::DDMMYYYYHHMM => "d/m/Y H:i",
+      DateTimeFormat::DDMMYYYYHHMMSS => "d/m/Y H:i:S",
     };
   }
 
@@ -146,6 +261,75 @@ class DateTimePicker extends TextInput
     };
   }
 
+  /**
+   * @return array
+   */
+  protected function getAlpineAttributes(): array
+  {
+    return array_merge(
+      ["autocomplete" => "off"],
+      $this->getOnBlur(),
+    );
+  }
+
+  /**
+   * @return string[]
+   */
+  protected function getXInit(): array
+  {
+    return [
+      'x-data' => '{}',
+      'x-init' => '
+        let append = $el.closest(`[x-ref="modalContainer"]`);
+
+        if (append === null)
+          append = document.body;
+
+        const initDatePicker = (append) => {
+          flatpickr($el, {
+            enableTime: ' . ($this->showTimeInDatePicker() ? "true" : "false") . ',
+            dateFormat: "' . $this->getDateTimeMaskDatePicker() .  '" ,
+            allowInput: true,
+            time_24hr: true,
+            closeOnSelect: true,
+            appendTo: append,
+            onOpen: function () {
+              const calendar = this.calendarContainer;
+              const input = $el;
+
+              function getAbsolutePosition(element) {
+                let top = 0, left = 0;
+
+                while (element) {
+                  top += element.offsetTop - element.scrollTop + element.clientTop;
+                  left += element.offsetLeft - element.scrollLeft + element.clientLeft;
+                  element = element.offsetParent;
+                }
+                return { top, left };
+              }
+
+              setTimeout(() => {
+                const position = getAbsolutePosition(input);
+                const height = input.offsetHeight;
+
+                if (calendar) {
+                  calendar.style.position = `absolute`;
+                  calendar.style.top = `${position.top + height}px`;
+                  calendar.style.left = `${position.left}px`;
+                }
+              }, 10);
+            }
+          })
+        };
+
+        initDatePicker(append);
+      ',
+    ];
+  }
+
+  /**
+   * @return string[]
+   */
   protected function getOnBlur(): array
   {
     $maskJS = $this->getDateTimeMaskJS();

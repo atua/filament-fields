@@ -3,6 +3,7 @@
 namespace Atua\FilamentFields;
 
 use Filament\FilamentServiceProvider;
+use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Validator;
@@ -92,6 +93,9 @@ class FilamentFieldsServiceProvider extends FilamentServiceProvider
     FilamentAsset::register([
       Js::make('money-script', __DIR__ . '/../resources/js/money.js'),
       Js::make('moment-script', __DIR__.'/../resources/js/moment.min.js'),
+      Js::make('flatpickr-script', __DIR__.'/../resources/js/flatpickr.min.js'),
+      Js::make('flatpickr-pt', __DIR__.'/../resources/js/flatpickr-pt.js'),
+      Css::make('flatpickr-css', __DIR__.'/../resources/css/flatpickr.min.css'),
     ]);
   }
 
