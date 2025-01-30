@@ -43,6 +43,7 @@ class DateTimePicker extends TextInput
         Action::make("setDefaultDate")
           ->label("Selecionar Data/Hora Atual")
           ->icon("heroicon-o-clock")
+          ->disabled(fn () => $this->isDisabled() || $this->isReadonly())
           ->action(function (Set $set) use ($DateTime) {
             $set($this->getName(), $DateTime->format($this->getDateTimeMaskPHP()));
           })
@@ -76,6 +77,7 @@ class DateTimePicker extends TextInput
       Action::make("openDatePicker")
         ->label("Abrir calendário")
         ->icon("heroicon-o-calendar")
+        ->disabled(fn () => $this->isDisabled() || $this->isReadonly())
         ->action(function ($livewire) {
           $livewire->js('
             setTimeout(() => {
