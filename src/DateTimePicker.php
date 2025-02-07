@@ -42,6 +42,7 @@ class DateTimePicker extends TextInput
       $this->suffixAction(
         Action::make("setDefaultDate")
           ->label("Selecionar Data/Hora Atual")
+          ->extraAttributes(["tabindex" => "-1"])
           ->icon("heroicon-o-clock")
           ->disabled(fn () => $this->isDisabled() || $this->isReadonly())
           ->action(function (Set $set) use ($DateTime) {
@@ -76,6 +77,7 @@ class DateTimePicker extends TextInput
     $this->suffixAction(
       Action::make("openDatePicker")
         ->label("Abrir calendário")
+        ->extraAttributes(["tabindex" => "-1"])
         ->icon("heroicon-o-calendar")
         ->disabled(fn () => $this->isDisabled() || $this->isReadonly())
         ->action(function ($livewire) {
