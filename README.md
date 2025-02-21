@@ -288,3 +288,13 @@ TextInput::make('state'),
 
 The mode parameter specifies whether the search action should be appended to or prepended to the CEP field, using the values suffix or prefix. Alternatively, you can use the none value with the `->live(onBlur: true)` method to indicate that the other address fields will be automatically filled only when the CEP field loses focus.
 
+### Relatorio
+
+To create a form filter for reports, you can use a custom Artisan command:
+
+```
+php artisan make:report ReportName
+```
+
+The script will prompt you to enter the `name` of the new filter and will generate a new class in `app\Filament\Pages\Reports\ReportName`. 
+Simply follow the script's instructions, and the filter will be easily accessible without any additional configuration. You will only need to focus on implementing the form fields and any extra logic specific to your report.
